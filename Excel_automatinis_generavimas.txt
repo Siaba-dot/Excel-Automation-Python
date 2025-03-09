@@ -54,7 +54,7 @@ def process_excels_in_all_subfolders(base_folder_path):
                     #  Atnaujiname datą langelyje C5
                     if sheet["C5"].value:
                         sheet["C5"].value = current_month_end
-                        print(f"✅ Langelyje C5 data pakeista į: {current_month_end}")
+                        print(f"Langelyje C5 data pakeista į: {current_month_end}")
 
                     #  Atnaujiname mėnesio tekstą langelyje A9
                     if sheet["A9"].value:
@@ -62,7 +62,7 @@ def process_excels_in_all_subfolders(base_folder_path):
                         for i, month in enumerate(months):
                             if month in cell_value:
                                 sheet["A9"].value = re.sub(month, current_month_name, cell_value, flags=re.IGNORECASE)
-                                print(f"✅ Langelyje A9 tekstas pakeistas į: {sheet['A9'].value}")
+                                print(f"Langelyje A9 tekstas pakeistas į: {sheet['A9'].value}")
                                 break
 
                     #  Išsaugome pakeitimus
