@@ -1,7 +1,7 @@
 # Excel-Automation-Python
 Šis projektas skirtas Excel failų apdorojimo automatizavimui su Python. Naudojamos „pandas“ ir „openpyxl“ bibliotekos duomenų analizavimui, ataskaitų generavimui ir konvertavimui į PDF formatą.
 
-## Naudojamos technologijos:
+## Naudojamos bibliotekos:
 - `pandas` – duomenų analizavimui  
 - `openpyxl` – Excel failų redagavimui  
 - `win32com.client` – konvertavimui į PDF  
