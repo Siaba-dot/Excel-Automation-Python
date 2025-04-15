@@ -4,12 +4,11 @@
 ## Naudojamos bibliotekos:
 - `pandas` – duomenų analizavimui  
 - `openpyxl` – Excel failų redagavimui  
-- `win32com.client` – konvertavimui į PDF  
+
 
 ## Projekto struktūra:
 - `Automatizuotas-Aktu-Generavimas-su-Python.pptx` – prezentacija apie projektą  
-- `Excel konvertavimas desktop os.txt` – techninės detalės  
-- `Excel_automatinis_generavimas.txt` – pavyzdinis duomenų failas  
+  - `Excel_automatinis_generavimas.txt` – pavyzdinis duomenų failas  
 
 ## Kaip naudoti?
 1. **Atsisiųskite repozitoriją**  
