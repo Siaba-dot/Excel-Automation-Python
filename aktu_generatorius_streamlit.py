@@ -1,13 +1,18 @@
+from zipfile import ZipFile
+import os
+
+# Sukuriame struktūrą, kuri būtų naudinga GitHub projektui
+project_files = {
+    "aktai_app_streamlit/main.py": """
 import streamlit as st
 import os
 import re
-import shutil
 from openpyxl import load_workbook
 from datetime import datetime
 import calendar
 import zipfile
+import tempfile
 
-# 📆 Funkcija apskaičiuoti einamojo mėnesio pabaigą ir pavadinimą
 def get_current_month_end_and_name():
     today = datetime.today()
     current_month_end = today.replace(day=calendar.monthrange(today.year, today.month)[1])
@@ -18,7 +23,6 @@ def get_current_month_end_and_name():
     current_month_name = month_names[today.month - 1]
     return current_month_end.strftime("%Y-%m-%d"), current_month_name
 
-# 🗄 Funkcija Excel failams apdoroti
 def process_excels_in_folder(folder_path):
     current_month_end, current_month_name = get_current_month_end_and_name()
     months = [
@@ -54,7 +58,6 @@ def process_excels_in_folder(folder_path):
 
     return all_files_processed
 
-# 🗂 Funkcija ZIP failo sukūrimui
 def create_zip_from_folder(folder_path, zip_path):
     with zipfile.ZipFile(zip_path, 'w') as zipf:
         for root, _, files in os.walk(folder_path):
@@ -63,30 +66,61 @@ def create_zip_from_folder(folder_path, zip_path):
                 arcname = os.path.relpath(file_path, folder_path)
                 zipf.write(file_path, arcname)
 
-# 📄 Streamlit UI
 st.title("📄 Aktų generavimo aplikacija")
 
-base_folder_path = st.text_input("Įveskite aplanko su Excel failais kelią:", "C:\\Users\\sigitaabasoviene\\OneDrive - Corpus A, UAB\\Desktop\\Aktai")
+uploaded_zip = st.file_uploader("Įkelkite ZIP failą su Excel dokumentais:", type="zip")
 
-if st.button("Generuoti aktus"):
-    if not os.path.exists(base_folder_path):
-        st.error("❌ Nurodytas aplankas neegzistuoja.")
-    else:
-        st.info("⏳ Pradedamas aktų generavimo procesas...")
-        success = process_excels_in_folder(base_folder_path)
+if uploaded_zip is not None:
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        zip_path = os.path.join(tmp_dir, "input.zip")
+        with open(zip_path, "wb") as f:
+            f.write(uploaded_zip.read())
 
-        if success:
-            zip_path = "aktai_sugeneruoti.zip"
-            create_zip_from_folder(base_folder_path, zip_path)
+        extract_dir = os.path.join(tmp_dir, "extracted")
+        os.makedirs(extract_dir, exist_ok=True)
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(extract_dir)
 
-            with open(zip_path, "rb") as f:
-                st.download_button(
-                    label="📦 Atsisiųsti visus Excel failus (.zip)",
-                    data=f.read(),
-                    file_name=zip_path,
-                    mime="application/zip"
-                )
-            os.remove(zip_path)
-            st.success("✅ Visi failai apdoroti sėkmingai!")
-        else:
-            st.warning("⚠️ Kai kurių failų apdoroti nepavyko. Patikrinkite klaidas.")
+        if st.button("Generuoti aktus"):
+            st.info("⏳ Pradedamas aktų generavimo procesas...")
+            success = process_excels_in_folder(extract_dir)
+
+            if success:
+                output_zip_path = os.path.join(tmp_dir, "aktai_sugeneruoti.zip")
+                create_zip_from_folder(extract_dir, output_zip_path)
+
+                with open(output_zip_path, "rb") as f:
+                    st.download_button(
+                        label="📦 Atsisiųsti visus Excel failus (.zip)",
+                        data=f.read(),
+                        file_name="aktai_sugeneruoti.zip",
+                        mime="application/zip"
+                    )
+                st.success("✅ Visi failai apdoroti sėkmingai!")
+            else:
+                st.warning("⚠️ Kai kurių failų apdoroti nepavyko. Patikrinkite klaidas.")
+""",
+    "aktai_app_streamlit/requirements.txt": "streamlit\nopenpyxl\n",
+    "aktai_app_streamlit/README.md": """
+# 📄 Aktų generavimo aplikacija
+
+Ši Streamlit aplikacija leidžia automatiškai atnaujinti Excel failų datas bei mėnesių pavadinimus pagal einamąjį mėnesį.
+
+## 🔧 Funkcionalumas
+
+- Įkelkite ZIP archyvą su Excel failais
+- Aplikacija apdoroja kiekvieną dokumentą:
+  - Atnaujina datą langelyje `C5`
+  - Keičia mėnesio pavadinimą langelyje `A9`
+- Sugeneruoja naują ZIP atsisiuntimui
+
+## 🧰 Naudojamos bibliotekos
+
+- `streamlit`
+- `openpyxl`
+- `zipfile`
+
+## 🚀 Paleidimas
+
+```bash
+streamlit run main.py
