@@ -116,11 +116,11 @@ if uploaded_zip is not None:
 
 ## 🧰 Naudojamos bibliotekos
 
-- `streamlit`
-- `openpyxl`
-- `zipfile`
+#- `streamlit`
+#- `openpyxl`
+#- `zipfile`
 
 ## 🚀 Paleidimas
 
-```bash
-streamlit run main.py
+#```bash
+#streamlit run main.py
